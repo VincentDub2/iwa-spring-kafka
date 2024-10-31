@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   zookeeper:
     image: bitnami/zookeeper:latest
@@ -60,6 +59,8 @@ services:
       POSTGRES_DB: usersdb
     ports:
       - "5432:5432"
+    volumes:
+      - usersdb_data:/var/lib/postgresql/data
 
   db-service-emplacements:
     image: postgres:latest
@@ -69,6 +70,12 @@ services:
       POSTGRES_DB: emplacementsdb
     ports:
       - "5433:5432"
+    volumes:
+      - emplacementsdb_data:/var/lib/postgresql/data
+
+volumes:
+  usersdb_data:
+  emplacementsdb_data:
 
 networks:
   default:
