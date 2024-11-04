@@ -1,5 +1,6 @@
 package polytech.service.users.controller;
 
+import polytech.service.users.exception.UserNotFoundException;
 import polytech.service.users.model.User;
 import polytech.service.users.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +26,28 @@ public class UserController {
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
-        return userService.getUserById(id);
+        return userService.getUserById(id)
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur avec l'ID " + id + " non trouvé."));
     }
 
-    @PostMapping
-    public User createUser(@RequestBody User user) {
-        return userService.createUser(user);
+    @PutMapping("/{id}")
+    public User updateUser(@PathVariable Long id, @RequestBody User user) {
+        return userService.getUserById(id)
+                .map(existingUser -> {
+                    existingUser.setEmail(user.getEmail());
+                    existingUser.setUsername(user.getUsername());
+                    existingUser.setPassword(user.getPassword());
+                    return userService.updateUser(existingUser);
+                })
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur avec l'ID " + id + " non trouvé."));
     }
 
     @DeleteMapping("/{id}")
     public void deleteUser(@PathVariable Long id) {
-        userService.deleteUser(id);
+        if (userService.getUserById(id).isPresent()) {
+            userService.deleteUser(id);
+        } else {
+            throw new UserNotFoundException("Utilisateur avec l'ID " + id + " non trouvé.");
+        }
     }
 }

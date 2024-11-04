@@ -22,8 +22,8 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public Optional<User> getUserById(Long id) {
+        return userRepository.findById(id);
     }
 
     public User createUser(User user) {
@@ -31,6 +31,10 @@ public class UserService {
         if (existingUser.isPresent()) {
             throw new IllegalArgumentException("L'email est déjà utilisé.");
         }
+        return userRepository.save(user);
+    }
+
+    public User updateUser(User user) {
         return userRepository.save(user);
     }
 
