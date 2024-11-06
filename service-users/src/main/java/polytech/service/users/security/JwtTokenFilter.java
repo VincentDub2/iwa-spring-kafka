@@ -10,6 +10,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import polytech.service.users.model.User;
@@ -51,15 +52,18 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         }
 
         Long userId = jwtTokenUtil.getUserId(token);
-        User user = userService.getUserById(userId);
+        Optional<User> user = userService.getUserById(userId);
 
-        if (user == null) {
+        if (user.isEmpty()) {
             filterChain.doFilter(request, response);
-            return;
+            throw new IllegalArgumentException("Utilisateur introuvable");
         }
 
+        // Vérifiez si l'utilisateur est désactivé
+        User u = user.get();
+
         // Créez un objet d'authentification
-        JwtAuthenticatedUser authentication = new JwtAuthenticatedUser(user);
+        JwtAuthenticatedUser authentication = new JwtAuthenticatedUser(u);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         filterChain.doFilter(request, response);
