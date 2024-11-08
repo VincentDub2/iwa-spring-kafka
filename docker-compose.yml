@@ -98,6 +98,7 @@ services:
       - "5434:5432"
     volumes:
       - messagingdb_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
 
 volumes:
   usersdb_data:
