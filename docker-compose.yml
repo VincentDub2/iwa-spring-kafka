@@ -33,6 +33,15 @@ services:
     depends_on:
       - kafka
       - db-service-users
+    networks:
+      - kafka-network
+      - db-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
 
   service-emplacements:
     build:
@@ -48,6 +57,15 @@ services:
     depends_on:
       - kafka
       - db-service-emplacements
+    networks:
+      - kafka-network
+      - db-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
 
   # Autres services : ajoutez autant de services que nécessaire
 
@@ -58,9 +76,16 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: usersdb
     ports:
-      - "5432:5432"
+      - "5432"
     volumes:
       - usersdb_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d usersdb" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   db-service-emplacements:
     image: postgres:latest
@@ -69,15 +94,24 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: emplacementsdb
     ports:
-      - "5433:5432"
+      - "5433"
     volumes:
       - emplacementsdb_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d emplacementsdb" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 volumes:
   usersdb_data:
   emplacementsdb_data:
 
 networks:
-  default:
-    name: microservices-network
+  kafka-network:
     driver: bridge
+  db-network:
+    driver: bridge
+
