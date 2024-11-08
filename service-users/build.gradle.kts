@@ -17,6 +17,8 @@ repositories {
 	mavenCentral()
 }
 
+extra["springCloudVersion"] = "2023.0.3"
+
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -25,6 +27,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.mapstruct:mapstruct:1.5.2.Final")
 	implementation("javax.persistence:javax.persistence-api:2.2")
+
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
 
 
 	implementation("io.jsonwebtoken:jjwt-api:0.12.6")
@@ -42,6 +46,13 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 
 }
+
+dependencyManagement {
+	imports {
+		mavenBom("org.springframework.cloud:spring-cloud-dependencies:${property("springCloudVersion")}")
+	}
+}
+
 
 tasks.withType<Test> {
 	useJUnitPlatform()

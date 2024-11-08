@@ -41,7 +41,7 @@ public class AuthController {
         String message = "Nouvel utilisateur enregistré avec l'ID : " + newUser.getId();
         kafkaTemplate.send("user-registration-topic", newUser.getId().toString(), message);
 
-        return userService.createUser(user);
+        return newUser;
     }
 
     @PostMapping("/login")
