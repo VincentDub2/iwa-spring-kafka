@@ -49,7 +49,23 @@ services:
       - kafka
       - db-service-emplacements
 
+  service-messaging:
+    build:
+      context: ./service-messaging
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-messaging:5432/messagingdb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    ports:
+      - "8082:8080"
+    depends_on:
+      - kafka
+      - db-service-messaging
+
   # Autres services : ajoutez autant de services que nécessaire
+
 
   db-service-users:
     image: postgres:latest
@@ -73,9 +89,21 @@ services:
     volumes:
       - emplacementsdb_data:/var/lib/postgresql/data
 
+  db-service-messaging:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: messagingdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - messagingdb_data:/var/lib/postgresql/data
+
 volumes:
   usersdb_data:
   emplacementsdb_data:
+  messagingdb_data:
 
 networks:
   default:
