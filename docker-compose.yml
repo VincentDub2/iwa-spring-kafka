@@ -59,13 +59,12 @@ services:
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     ports:
-      - "8082:8080"
+      - "8083:8080"
     depends_on:
       - kafka
       - db-service-messaging
 
   # Autres services : ajoutez autant de services que nécessaire
-
 
   db-service-users:
     image: postgres:latest
@@ -96,7 +95,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: messagingdb
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
       - messagingdb_data:/var/lib/postgresql/data
 

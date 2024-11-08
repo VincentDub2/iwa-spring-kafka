@@ -22,7 +22,7 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # Exposez le port sur lequel le microservice écoutera
-EXPOSE 8081
+EXPOSE 8082
 
 # Commande de démarrage du microservice
 ENTRYPOINT ["java", "-jar", "app.jar"]
