@@ -5,6 +5,8 @@ services:
       ALLOW_ANONYMOUS_LOGIN: 'yes'
     ports:
       - "2181:2181"
+    networks:
+      - kafka-network
 
   kafka:
     image: bitnami/kafka:latest
@@ -16,6 +18,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
     depends_on:
       - zookeeper
+    networks:
+      - kafka-network
     ports:
       - "9092:9092"
 
@@ -28,46 +32,20 @@ services:
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    ports:
-      - "8081:8080"
     depends_on:
       - kafka
       - db-service-users
+      - api-gateway
     networks:
       - kafka-network
       - db-network
+      - api-network
     healthcheck:
       test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
-      interval: 20s
-      timeout: 5s
-      retries: 15
+      interval: 30s
+      timeout: 60s
+      retries: 5
     restart: unless-stopped
-
-  service-emplacements:
-    build:
-      context: ./service-emplacements
-      dockerfile: Dockerfile
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-emplacements:5432/emplacementsdb
-      - SPRING_DATASOURCE_USERNAME=user
-      - SPRING_DATASOURCE_PASSWORD=password
-      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    ports:
-      - "8082:8080"
-    depends_on:
-      - kafka
-      - db-service-emplacements
-    networks:
-      - kafka-network
-      - db-network
-    healthcheck:
-      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
-      interval: 20s
-      timeout: 5s
-      retries: 15
-    restart: unless-stopped
-
-  # Autres services : ajoutez autant de services que nécessaire
 
   db-service-users:
     image: postgres:latest
@@ -87,6 +65,29 @@ services:
       timeout: 5s
       retries: 3
 
+  service-emplacements:
+    build:
+      context: ./service-emplacements
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-emplacements:5432/emplacementsdb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+      - db-service-emplacements
+    networks:
+      - kafka-network
+      - db-network
+      - api-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
   db-service-emplacements:
     image: postgres:latest
     environment:
@@ -105,11 +106,52 @@ services:
       timeout: 5s
       retries: 3
 
+  discovery-service:
+    #Image: discovery-service:latest   Discovery server Eureka
+    build:
+      context: ./discovery-service-eureka
+      dockerfile: Dockerfile
+    container_name: discovery-service
+    ports:
+      - "8761:8761"  # Output to port 8761
+    networks:
+      - api-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+        context: ./api-gateway
+        dockerfile: Dockerfile
+    container_name: api-gateway
+    depends_on:
+        - discovery-service
+    environment:
+      - EUREKA_URI=http://discovery-service:8761/eureka
+    ports:
+      - "8090:8080"  # Output to port 8090
+    networks:
+      - api-network
+    #env_file: ./env/gateway/api.env
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
+
+
 volumes:
   usersdb_data:
   emplacementsdb_data:
 
 networks:
+  api-network:
   kafka-network:
     driver: bridge
   db-network:

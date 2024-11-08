@@ -44,9 +44,14 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(authorizeRequests -> authorizeRequests
+                        .requestMatchers("/api/v1/user/auth/**").permitAll()
                         .requestMatchers("/auth/**").permitAll()  // Public endpoints
                         .anyRequest().authenticated()  // All other endpoints require authentication
                 );
+
+        System.out.println("SecurityConfig: Adding JWT Token Filter");
+        System.out.println(http.toString());
+
 
         // Add JWT Token Filter before UsernamePasswordAuthenticationFilter
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
@@ -58,7 +63,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:8081", "http://localhost:8082")); // Autorise les origines locales
+        configuration.setAllowedOrigins(List.of("*")); // Autorise les origines locales
         configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // Méthodes autorisées
         configuration.setAllowedHeaders(List.of("Authorization", "Content-Type", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"));
         configuration.setAllowCredentials(true); // Autorise l'envoi des cookies si nécessaire pour les sessions

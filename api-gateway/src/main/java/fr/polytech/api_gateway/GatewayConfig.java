@@ -19,7 +19,8 @@ public class GatewayConfig {
         return builder.routes()
                 .route("user-route", r -> r
                         .path("/api/v1/user/**") // Path of the request to match
-                        .uri("lb://user-api") // Destination URI of the service
+                        .filters(f -> f.stripPrefix(3)) // Remove the first part of the path
+                        .uri("lb://SERVICE-USERS") // Destination URI of the service
                 )
                 .build();
     }

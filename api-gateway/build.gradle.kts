@@ -22,13 +22,15 @@ extra["springCloudVersion"] = "2023.0.3"
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
 	implementation("org.springframework.boot:spring-boot-starter-security")
-	implementation("org.springframework.cloud:spring-cloud-starter-config")
-	implementation("org.springframework.cloud:spring-cloud-gateway")
+
 	implementation("org.springframework.cloud:spring-cloud-starter-gateway")
-	implementation("org.springframework.cloud:spring-cloud-starter-gateway-mvc")
+	implementation("org.springframework.cloud:spring-cloud-starter-netflix-eureka-client")
+	implementation("org.springframework.boot:spring-boot-starter-webflux")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.springframework.security:spring-security-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+
 }
 
 dependencyManagement {
