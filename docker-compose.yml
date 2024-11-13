@@ -77,17 +77,42 @@ services:
     depends_on:
       - kafka
       - db-service-emplacements
-    networks:
-      - kafka-network
-      - db-network
-      - api-network
-    healthcheck:
-      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
-      interval: 20s
-      timeout: 5s
-      retries: 15
-    restart: unless-stopped
 
+
+  service-messaging:
+    build:
+      context: ./service-messaging
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-messaging:5432/messagingdb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    networks:
+      - db-network
+    ports:
+      - "8083:8080"
+    depends_on:
+      - kafka
+      - db-service-messaging
+      
+  db-service-messaging:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: messagingdb
+    networks:
+      - db-network
+    ports:
+      - "5434:5432"
+    volumes:
+      - messagingdb_data:/var/lib/postgresql/data
+      - ./service-messaging/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # Autres services : ajoutez autant de services que nécessaire
+
+ 
   db-service-emplacements:
     image: postgres:latest
     environment:
@@ -144,11 +169,10 @@ services:
       retries: 15
     restart: unless-stopped
 
-
-
 volumes:
   usersdb_data:
   emplacementsdb_data:
+  messagingdb_data:
 
 networks:
   api-network:
