@@ -19,18 +19,20 @@ public class MessagingService {
     @Autowired
     private MessageRepository messageRepository;
 
-    // Créer une nouvelle conversation
-    public Conversation createConversation(Long senderId, Long receiverId) {
-        Conversation conversation = new Conversation(senderId, receiverId);
+    // Créer une nouvelle conversation entre deux personnes
+    public Conversation createConversation(Long personOneId, Long personTwoId) {
+        // Crée une nouvelle conversation avec personOneId et personTwoId
+        Conversation conversation = new Conversation(personOneId, personTwoId);
         return conversationRepository.save(conversation);
     }
 
-    // Envoyer un message dans une conversation
-    public Message sendMessage(Long conversationId, String contenu) {
+    // Envoyer un message dans une conversation existante
+    public Message sendMessage(Long conversationId, Long senderId, String contenu) {
         Optional<Conversation> conversationOpt = conversationRepository.findById(conversationId);
         if (conversationOpt.isPresent()) {
             Conversation conversation = conversationOpt.get();
-            Message message = new Message(conversation, contenu);
+            // Crée un nouveau message avec senderId et contenu
+            Message message = new Message(conversation, senderId, contenu);
             return messageRepository.save(message);
         } else {
             throw new RuntimeException("Conversation not found");
@@ -42,8 +44,8 @@ public class MessagingService {
         return messageRepository.findByConversationId(conversationId);
     }
 
-    // Récupérer toutes les conversations d'un utilisateur
+    // Récupérer toutes les conversations auxquelles un utilisateur a participé
     public List<Conversation> getConversationsByUser(Long userId) {
-        return conversationRepository.findBySenderIdOrReceiverId(userId, userId);
+        return conversationRepository.findByPersonOneIdOrPersonTwoId(userId, userId);
     }
 }

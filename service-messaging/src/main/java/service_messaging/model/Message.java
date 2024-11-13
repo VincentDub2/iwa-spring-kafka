@@ -1,6 +1,9 @@
 package service_messaging.model;
 
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "Message")
@@ -12,18 +15,21 @@ public class Message {
 
     @ManyToOne
     @JoinColumn(name = "conversation_id", nullable = false)
+    @JsonIgnore
     private Conversation conversation;
 
+    private Long senderId;
     private String contenu;
-    private String date;
+    private LocalDateTime date;
 
     protected Message() {
     }
 
-    public Message(Conversation conversation, String contenu) {
+    public Message(Conversation conversation, Long senderId, String contenu) {
         this.conversation = conversation;
+        this.senderId = senderId;
         this.contenu = contenu;
-        this.date = java.time.LocalDate.now().toString();
+        this.date = LocalDateTime.now();
     }
 
     public Long getId() {
@@ -34,23 +40,32 @@ public class Message {
         return conversation;
     }
 
-    public void setConversation(Conversation conversation) {
-        this.conversation = conversation;
+    public Long getSenderId() {
+        return senderId;
     }
 
     public String getContenu() {
         return contenu;
     }
 
+    public LocalDateTime getDate() {
+        return date;
+    }
+
+    public void setConversation(Conversation conversation) {
+        this.conversation = conversation;
+    }
+
+    public void setSenderId(Long senderId) {
+        this.senderId = senderId;
+    }
+
     public void setContenu(String contenu) {
         this.contenu = contenu;
     }
 
-    public String getDate() {
-        return date;
-    }
-
-    public void setDate(String date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
+    
 }

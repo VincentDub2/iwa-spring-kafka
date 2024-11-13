@@ -11,8 +11,8 @@ public class Conversation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long senderId;
-    private Long receiverId;
+    private Long personOneId;
+    private Long personTwoId;
 
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Message> messages;
@@ -20,29 +20,29 @@ public class Conversation {
     protected Conversation() {
     }
 
-    public Conversation(Long senderId, Long receiverId) {
-        this.senderId = senderId;
-        this.receiverId = receiverId;
+    public Conversation(Long personOneId, Long personTwoId) {
+        this.personOneId = personOneId;
+        this.personTwoId = personTwoId;
     }
 
     public Long getId() {
         return id;
     }
 
-    public Long getSenderId() {
-        return senderId;
+    public Long getPersonOneId() {
+        return personOneId;
     }
 
-    public void setSenderId(Long senderId) {
-        this.senderId = senderId;
+    public void setPersonOneId(Long personOneId) {
+        this.personOneId = personOneId;
     }
 
-    public Long getReceiverId() {
-        return receiverId;
+    public Long getPersonTwoId() {
+        return personTwoId;
     }
 
-    public void setReceiverId(Long receiverId) {
-        this.receiverId = receiverId;
+    public void setPersonTwoId(Long personTwoId) {
+        this.personTwoId = personTwoId;
     }
 
     public List<Message> getMessages() {
