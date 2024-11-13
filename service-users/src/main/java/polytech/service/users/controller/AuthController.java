@@ -8,18 +8,23 @@ import polytech.service.users.exception.UserAlreadyExistsException;
 import polytech.service.users.model.User;
 import polytech.service.users.security.JwtTokenUtil;
 import polytech.service.users.service.UserService;
-
 import java.util.Optional;
+import org.springframework.kafka.core.KafkaTemplate;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
+
+
 
     @Autowired
     private UserService userService;
 
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
+
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate; // Inject KafkaTemplate
 
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -29,7 +34,14 @@ public class AuthController {
             throw new UserAlreadyExistsException("L'email est déjà utilisé.");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userService.createUser(user);
+        // Enregistrer l'utilisateur
+        User newUser = userService.createUser(user);
+
+        // Envoyer un message Kafka après l'enregistrement
+        String message = "Nouvel utilisateur enregistré avec l'ID : " + newUser.getId();
+        kafkaTemplate.send("user-registration-topic", newUser.getId().toString(), message);
+
+        return newUser;
     }
 
     @PostMapping("/login")

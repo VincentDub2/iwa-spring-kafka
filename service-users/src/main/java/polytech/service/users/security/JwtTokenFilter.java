@@ -32,7 +32,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         // Ignorer les requêtes vers /auth/*
         String path = request.getRequestURI();
-        if (path.startsWith("/auth/")) {
+        if ((path.startsWith("/auth/")|| path.startsWith("/api/v1/user/"))) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -48,7 +48,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         if (!jwtTokenUtil.validate(token)) {
             filterChain.doFilter(request, response);
-            return;
+            throw new IllegalArgumentException("Token invalide");
         }
 
         Long userId = jwtTokenUtil.getUserId(token);
