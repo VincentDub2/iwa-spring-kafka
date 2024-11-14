@@ -1,5 +1,3 @@
-# 1. Étape de build
-# Utilisez une image Gradle pour construire l'application
 FROM gradle:8.8-jdk21 AS build
 
 # Définissez le répertoire de travail dans le conteneur
@@ -22,7 +20,7 @@ WORKDIR /app
 COPY --from=build /app/build/libs/*.jar app.jar
 
 # Exposez le port sur lequel le microservice écoutera
-EXPOSE 8082
+EXPOSE 8080
 
 # Commande de démarrage du microservice
 ENTRYPOINT ["java", "-jar", "app.jar"]

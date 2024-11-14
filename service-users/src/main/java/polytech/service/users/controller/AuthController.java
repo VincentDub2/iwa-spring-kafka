@@ -10,12 +10,17 @@ import polytech.service.users.security.JwtTokenUtil;
 import polytech.service.users.service.UserService;
 import java.util.Optional;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
+
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
 
-
+    private static final Logger logger = LoggerFactory.getLogger(AuthController.class);
 
     @Autowired
     private UserService userService;
@@ -30,6 +35,7 @@ public class AuthController {
 
     @PostMapping("/register")
     public User register(@RequestBody User user) {
+        logger.debug("Enregistrement d'un nouvel utilisateur");
         if (userService.getUserByEmail(user.getEmail()).isPresent()) {
             throw new UserAlreadyExistsException("L'email est déjà utilisé.");
         }
@@ -46,6 +52,7 @@ public class AuthController {
 
     @PostMapping("/login")
     public String login(@RequestBody User loginRequest) {
+        logger.debug("Authentification de l'utilisateur");
         Optional<User> user = userService.getUserByEmail(loginRequest.getEmail());
         if (user.isPresent() && passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
             return jwtTokenUtil.generateAccessToken(user.get().getId());
