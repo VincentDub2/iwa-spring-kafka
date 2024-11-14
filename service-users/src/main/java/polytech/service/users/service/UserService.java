@@ -19,7 +19,10 @@ public class UserService {
     }
 
     public List<User> getAllUsers() {
+
+
         return userRepository.findAll();
+
     }
 
     public Optional<User> getUserById(Long id) {
