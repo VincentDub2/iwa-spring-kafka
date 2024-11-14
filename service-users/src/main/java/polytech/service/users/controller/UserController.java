@@ -5,12 +5,16 @@ import polytech.service.users.model.User;
 import polytech.service.users.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/")
 public class UserController {
+
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     private final UserService userService;
 
@@ -21,11 +25,16 @@ public class UserController {
 
     @GetMapping
     public List<User> getAllUsers() {
-        return userService.getAllUsers();
+        logger.debug("Récupération de tous les utilisateurs");
+        List<User> users = userService.getAllUsers();
+        logger.debug("Nombre d'utilisateurs récupérés : {}", users.size());
+        return users;
+
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Long id) {
+        logger.debug("Recherche de l'utilisateur avec l'ID : {}", id);
         return userService.getUserById(id)
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur avec l'ID " + id + " non trouvé."));
     }

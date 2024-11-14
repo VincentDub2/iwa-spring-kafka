@@ -1,4 +1,4 @@
-package fr.polytech.api_gateway;
+package fr.polytech.api_gateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,7 +8,7 @@ import org.springframework.web.cors.reactive.UrlBasedCorsConfigurationSource;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 @Configuration
-public class ConfigCors {
+public class CORSConfig {
 
     /**
      * Configure the CORS filter to allow requests from the Expo app
@@ -18,7 +18,6 @@ public class ConfigCors {
     @Bean
     public CorsWebFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        //corsConfig.addAllowedOrigin("http://localhost:19006");
         corsConfig.addAllowedOrigin("*");
         corsConfig.addAllowedHeader("*");
         corsConfig.addAllowedMethod("*");
