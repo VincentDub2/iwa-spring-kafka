@@ -90,12 +90,14 @@ services:
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
     networks:
       - db-network
-    ports:
-      - "8083:8080"
+      - kafka-network
+      - api-network
     depends_on:
       - kafka
       - db-service-messaging
-      
+      - api-gateway
+    restart: unless-stopped
+
   db-service-messaging:
     image: postgres:latest
     environment:
@@ -112,7 +114,7 @@ services:
 
   # Autres services : ajoutez autant de services que nécessaire
 
- 
+
   db-service-emplacements:
     image: postgres:latest
     environment:
