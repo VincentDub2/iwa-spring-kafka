@@ -30,7 +30,11 @@ public class GatewayConfig {
                         .filters(f -> f.stripPrefix(3)) // Remove the first part of the path
                         .uri("lb://SERVICE-USERS") // Destination URI of the service
                 )
-                .build();
+                .route("message-route", r -> r
+                        .path("/api/v1/messages/**") // Path of the request to match
+                        .filters(f -> f.stripPrefix(3)) // Remove the first part of the path
+                        .uri("lb://SERVICE-MESSAGING") // Destination URI of the service
+                ).build();
     }
 
 }
