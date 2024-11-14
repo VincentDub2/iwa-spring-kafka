@@ -1,12 +1,19 @@
 package polytech.service.users.controller;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
 import polytech.service.users.exception.UserNotFoundException;
 import polytech.service.users.model.User;
 import polytech.service.users.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/users")
@@ -37,6 +44,8 @@ public class UserController {
                     existingUser.setEmail(user.getEmail());
                     existingUser.setUsername(user.getUsername());
                     existingUser.setPassword(user.getPassword());
+                    existingUser.setFirstName(user.getFirstName());
+                    existingUser.setLastName(user.getLastName());
                     return userService.updateUser(existingUser);
                 })
                 .orElseThrow(() -> new UserNotFoundException("Utilisateur avec l'ID " + id + " non trouvé."));
