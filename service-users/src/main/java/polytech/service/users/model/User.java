@@ -1,6 +1,11 @@
 package polytech.service.users.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 
 @Entity
@@ -11,6 +16,8 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
+    private String firstname;
+    private String lastname;
 
     @Column(unique = true)
     private String email;
@@ -22,8 +29,26 @@ public class User {
 
     public User(String username, String email, String password) {
         this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
         this.email = email;
         this.password = password;
+    }
+
+    public String getFirstName() {
+        return firstname;
+    }
+
+    public void setFirstName(String firstname) {
+        this.firstname = firstname;
+    }
+
+    public String getLastName() {
+        return lastname;
+    }
+
+    public void setLastName(String lastname) {
+        this.lastname = lastname;
     }
 
     public String getEmail() {
