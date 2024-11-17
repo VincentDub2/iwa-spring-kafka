@@ -65,6 +65,49 @@ services:
       timeout: 5s
       retries: 3
 
+  service-reservations:
+    build:
+      context: ./service-reservations
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-reservations:5432/reservations_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+      - db-service-reservations
+      - api-gateway
+      - discovery-service
+    networks:
+      - kafka-network
+      - db-network
+      - api-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
+      interval: 30s
+      timeout: 60s
+      retries: 5
+    restart: unless-stopped
+
+  db-service-reservations:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres 
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reservations_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - reservations_db_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d reservations_db" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
   service-emplacements:
     build:
       context: ./service-emplacements
@@ -175,6 +218,8 @@ volumes:
   usersdb_data:
   emplacementsdb_data:
   messagingdb_data:
+  reservations_db_data:
+
 
 networks:
   api-network:
