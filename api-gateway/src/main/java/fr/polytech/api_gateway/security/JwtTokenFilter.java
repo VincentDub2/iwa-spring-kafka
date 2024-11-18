@@ -88,6 +88,7 @@ public class JwtTokenFilter implements GlobalFilter {
                 HttpHeaders headers = new HttpHeaders();
                 headers.putAll(super.getHeaders());
                 headers.add("X-User-Id", String.valueOf(userId));
+                headers.add("X-User-Role", role);
                 return headers;
             }
         };
