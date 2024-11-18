@@ -69,6 +69,8 @@ services:
     build:
       context: ./service-reservations
       dockerfile: Dockerfile
+    ports:
+    - "8081:8080"
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-reservations:5432/reservations_db
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -89,7 +91,7 @@ services:
       timeout: 60s
       retries: 5
     restart: unless-stopped
-
+  
   db-service-reservations:
     image: postgres:latest
     environment:
@@ -99,7 +101,9 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - reservations_db_data:/var/lib/postgresql/data
+    - reservations_db_data:/var/lib/postgresql/data
+    - ./service-reservations/create_tables_reservations.sql:/docker-entrypoint-initdb.d/create_tables_reservations.sql
+
     networks:
       - db-network
     healthcheck:

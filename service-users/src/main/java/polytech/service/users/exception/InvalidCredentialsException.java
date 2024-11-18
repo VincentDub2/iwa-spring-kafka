@@ -7,8 +7,7 @@ public class InvalidCredentialsException extends RuntimeException {
 
 
     public InvalidCredentialsException(String message) {
-        LOGGER.error(message);
         super(message);
-
+        LOGGER.error(message);
     }
 }
