@@ -23,9 +23,10 @@ public class JwtTokenUtil {
         @param userId ID de l'utilisateur
         @return Token JWT
      */
-    public String generateAccessToken(Long userId) {
+    public String generateAccessToken(Long userId, String role) {
         return Jwts.builder()
                 .subject(String.valueOf(userId))
+                .claim("role", role)
                 .issuer(jwtIssuer)
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + 86400000)) // 24 heures
@@ -45,6 +46,20 @@ public class JwtTokenUtil {
                 .parseSignedClaims(token).getPayload();
 
         return Long.parseLong(claims.getSubject());
+    }
+
+    /**
+        * Extrait le rôle de l'utilisateur du token JWT
+        @param token Token JWT
+        @return Rôle de l'utilisateur
+     */
+    public String getRole(String token) {
+        Claims claims = Jwts.parser()
+                .verifyWith(jwtSecret)
+                .build()
+                .parseSignedClaims(token).getPayload();
+
+        return claims.get("role", String.class);
     }
 
     /**
