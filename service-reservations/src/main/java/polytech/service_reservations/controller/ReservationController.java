@@ -16,7 +16,7 @@ import polytech.service_reservations.model.Reservation;
 import polytech.service_reservations.service.ReservationService;
 
 @RestController
-@RequestMapping("/api/reservations")
+@RequestMapping("/")
 public class ReservationController {
 
     @Autowired
@@ -31,7 +31,7 @@ public class ReservationController {
     @GetMapping("/test")
         public String testEndpoint() {
     return "Test OK";
-    }  
+    }
 
     @GetMapping("/{id}")
     public Optional<Reservation> getReservationById(@PathVariable Long id) {
