@@ -26,6 +26,9 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+### Apple ###
+.DS_Store
+
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
