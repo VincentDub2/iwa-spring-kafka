@@ -18,6 +18,7 @@ public class User {
     private String username;
     private String firstname;
     private String lastname;
+    private String role;
 
     @Column(unique = true)
     private String email;
@@ -33,6 +34,7 @@ public class User {
         this.lastname = lastname;
         this.email = email;
         this.password = password;
+        this.role = "USER"; // Par défaut, un utilisateur est un utilisateur standard
     }
 
     public String getFirstName() {
@@ -82,4 +84,13 @@ public class User {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
 }

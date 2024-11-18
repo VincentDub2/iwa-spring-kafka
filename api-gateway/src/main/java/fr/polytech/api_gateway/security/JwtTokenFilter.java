@@ -22,6 +22,8 @@ public class JwtTokenFilter implements GlobalFilter {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenFilter.class);
 
+
+
     @Autowired
     private JwtTokenUtil jwtTokenUtil;
 
@@ -70,7 +72,14 @@ public class JwtTokenFilter implements GlobalFilter {
 
         // Extraire l'ID utilisateur du jeton
         Long userId = jwtTokenUtil.getUserId(token);
+        String role = jwtTokenUtil.getRole(token);
 
+        // Vérifier les permissions pour des routes spécifiques
+        if (path.startsWith("/admin/") && !"ROLE_ADMIN".equals(role)) {
+            logger.warn("Access denied for user with role: {}", role);
+            exchange.getResponse().setStatusCode(HttpStatus.FORBIDDEN);
+            return exchange.getResponse().setComplete();
+        }
 
         // Créer une nouvelle requête avec les en-têtes modifiés
         ServerHttpRequest modifiedRequest = new ServerHttpRequestDecorator(exchange.getRequest()) {
@@ -79,6 +88,7 @@ public class JwtTokenFilter implements GlobalFilter {
                 HttpHeaders headers = new HttpHeaders();
                 headers.putAll(super.getHeaders());
                 headers.add("X-User-Id", String.valueOf(userId));
+                headers.add("X-User-Role", role);
                 return headers;
             }
         };

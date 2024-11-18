@@ -55,7 +55,7 @@ public class AuthController {
         logger.debug("Authentification de l'utilisateur");
         Optional<User> user = userService.getUserByEmail(loginRequest.getEmail());
         if (user.isPresent() && passwordEncoder.matches(loginRequest.getPassword(), user.get().getPassword())) {
-            return jwtTokenUtil.generateAccessToken(user.get().getId());
+            return jwtTokenUtil.generateAccessToken(user.get().getId(),user.get().getRole());
         } else {
             throw new InvalidCredentialsException("Email ou mot de passe incorrect");
         }
