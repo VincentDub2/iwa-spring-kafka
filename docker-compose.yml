@@ -1,4 +1,3 @@
-version: '3.8'
 services:
   zookeeper:
     image: bitnami/zookeeper:latest
@@ -6,6 +5,8 @@ services:
       ALLOW_ANONYMOUS_LOGIN: 'yes'
     ports:
       - "2181:2181"
+    networks:
+      - kafka-network
 
   kafka:
     image: bitnami/kafka:latest
@@ -17,6 +18,8 @@ services:
       KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
     depends_on:
       - zookeeper
+    networks:
+      - kafka-network
     ports:
       - "9092:9092"
 
@@ -29,11 +32,83 @@ services:
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    ports:
-      - "8081:8080"
     depends_on:
       - kafka
       - db-service-users
+      - api-gateway
+    networks:
+      - kafka-network
+      - db-network
+      - api-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
+      interval: 30s
+      timeout: 60s
+      retries: 5
+    restart: unless-stopped
+
+  db-service-users:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: usersdb
+    ports:
+      - "5432"
+    volumes:
+      - usersdb_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d usersdb" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  service-reservations:
+    build:
+      context: ./service-reservations
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-reservations:5432/reservations_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+      - db-service-reservations
+      - api-gateway
+      - discovery-service
+    networks:
+      - kafka-network
+      - db-network
+      - api-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
+      interval: 30s
+      timeout: 60s
+      retries: 5
+    restart: unless-stopped
+
+  db-service-reservations:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: reservations_db
+    ports:
+      - "5432:5432"
+    volumes:
+    - reservations_db_data:/var/lib/postgresql/data
+    - ./service-reservations/create_tables_reservations.sql:/docker-entrypoint-initdb.d/create_tables_reservations.sql
+
+    networks:
+      - db-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d reservations_db" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   service-emplacements:
     build:
@@ -44,22 +119,46 @@ services:
       - SPRING_DATASOURCE_USERNAME=user
       - SPRING_DATASOURCE_PASSWORD=password
       - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
-    ports:
-      - "8082:8080"
     depends_on:
       - kafka
       - db-service-emplacements
 
-  # Autres services : ajoutez autant de services que nécessaire
 
-  db-service-users:
+  service-messaging:
+    build:
+      context: ./service-messaging
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-messaging:5432/messagingdb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    networks:
+      - db-network
+      - kafka-network
+      - api-network
+    depends_on:
+      - kafka
+      - db-service-messaging
+      - api-gateway
+    restart: unless-stopped
+
+  db-service-messaging:
     image: postgres:latest
     environment:
       POSTGRES_USER: user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: usersdb
+      POSTGRES_DB: messagingdb
+    networks:
+      - db-network
     ports:
-      - "5432:5432"
+      - "5434:5432"
+    volumes:
+      - messagingdb_data:/var/lib/postgresql/data
+      - ./service-messaging/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  # Autres services : ajoutez autant de services que nécessaire
+
 
   db-service-emplacements:
     image: postgres:latest
@@ -68,9 +167,66 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: emplacementsdb
     ports:
-      - "5433:5432"
+      - "5433"
+    volumes:
+      - emplacementsdb_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d emplacementsdb" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  discovery-service:
+    #Image: discovery-service:latest   Discovery server Eureka
+    build:
+      context: ./discovery-service-eureka
+      dockerfile: Dockerfile
+    container_name: discovery-service
+    ports:
+      - "8761:8761"  # Output to port 8761
+    networks:
+      - api-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8761/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
+  api-gateway:
+    build:
+        context: ./api-gateway
+        dockerfile: Dockerfile
+    container_name: api-gateway
+    depends_on:
+        - discovery-service
+    environment:
+      - EUREKA_URI=http://discovery-service:8761/eureka
+    ports:
+      - "8090:8080"  # Output to port 8090
+    networks:
+      - api-network
+    #env_file: ./env/gateway/api.env
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 20s
+      timeout: 5s
+      retries: 15
+    restart: unless-stopped
+
+volumes:
+  usersdb_data:
+  emplacementsdb_data:
+  messagingdb_data:
+  reservations_db_data:
+
 
 networks:
-  default:
-    name: microservices-network
+  api-network:
+  kafka-network:
     driver: bridge
+  db-network:
+    driver: bridge
+
