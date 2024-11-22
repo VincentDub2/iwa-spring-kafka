@@ -19,7 +19,15 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.CONFLICT)
     @ResponseBody
     public String handleUserAlreadyExistsException(UserAlreadyExistsException ex) {
-        LOGGER.error("Utilisateur déjà existant : " + ex.getMessage());
+        LOGGER.error("Utilisateur déjà existant : {}", ex.getMessage());
+        return ex.getMessage();
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseBody
+    public String handleUserNotFoundException(UserNotFoundException ex) {
+        LOGGER.error("Utilisateur non trouvé : {}", ex.getMessage());
         return ex.getMessage();
     }
 
@@ -28,7 +36,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public String handleInvalidCredentialsException(InvalidCredentialsException ex) {
 
-        LOGGER.error("Erreur d'authentification : " + ex.getMessage());
+        LOGGER.error("Erreur d'authentification : {}", ex.getMessage());
         return ex.getMessage();
 
     }
@@ -38,7 +46,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     @ResponseBody
     public String handleGeneralException(Exception ex) {
-        LOGGER.error("Erreur interne du serveur : " + ex.getMessage());
+        LOGGER.error("Erreur interne du serveur : {}", ex.getMessage());
         return "Erreur interne du serveur : " + ex.getMessage();
     }
 }
