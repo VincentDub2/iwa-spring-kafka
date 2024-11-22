@@ -1,0 +1,3 @@
+[submodule "biv_quack_ms_users"]
+	path = biv_quack_ms_users
+	url = git@github.com:VincentDub2/biv_quack_ms_users.git
