@@ -18,6 +18,7 @@ public class User {
     private String username;
     private String firstname;
     private String lastname;
+    private String phone;
     private String role;
 
     @Column(unique = true)
@@ -33,6 +34,7 @@ public class User {
         this.firstname = firstname;
         this.lastname = lastname;
         this.email = email;
+        this.phone = phone;
         this.password = password;
         this.role = "USER"; // Par défaut, un utilisateur est un utilisateur standard
     }
@@ -75,6 +77,14 @@ public class User {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
     }
 
     public String getUsername() {
