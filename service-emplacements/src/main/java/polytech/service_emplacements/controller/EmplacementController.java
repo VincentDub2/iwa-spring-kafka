@@ -10,8 +10,9 @@ import polytech.service_emplacements.service.EmplacementService;
 import java.util.List;
 import java.util.Optional;
 
+@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/emplacements")
+@RequestMapping("/emplacement")
 public class EmplacementController {
 
     private final EmplacementService emplacementService;
@@ -24,6 +25,7 @@ public class EmplacementController {
     // Récupérer tous les emplacements
     @GetMapping
     public ResponseEntity<List<Emplacement>> getAllEmplacements() {
+        System.out.println("GET /emplacement recu");
         List<Emplacement> emplacements = emplacementService.getAllEmplacements();
         return new ResponseEntity<>(emplacements, HttpStatus.OK);
     }

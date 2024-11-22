@@ -44,7 +44,8 @@ public class EmplacementService {
             emplacement.setLatitude(updatedEmplacement.getLatitude());
             emplacement.setLongitude(updatedEmplacement.getLongitude());
             emplacement.setPrixParNuit(updatedEmplacement.getPrixParNuit());
-            emplacement.setDispo(updatedEmplacement.getDispo());
+            emplacement.setDateDebut(updatedEmplacement.getDateDebut());
+            emplacement.setDateFin(updatedEmplacement.getDateFin());
             return emplacementRepository.save(emplacement);
         });
     }

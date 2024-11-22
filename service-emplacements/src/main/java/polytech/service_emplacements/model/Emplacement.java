@@ -1,6 +1,6 @@
 package polytech.service_emplacements.model;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.List;
 
 @Entity
@@ -40,14 +40,17 @@ public class Emplacement {
     @Column(nullable = false)
     private Double prixParNuit;
 
-    @Embedded
-    private Dispo dispo;
+    @Column(nullable = false)
+    private String dateDebut; // Disponibilité - Date de début
+
+    @Column(nullable = false)
+    private String dateFin;   // Disponibilité - Date de fin
 
     // Constructeur par défaut
     protected Emplacement() {}
 
     public Emplacement(Long idHote, String nom, String adresse, String description, List<String> commodites,
-                       byte[] image, Double latitude, Double longitude, Double prixParNuit, Dispo dispo) {
+                       byte[] image, Double latitude, Double longitude, Double prixParNuit, String dateDebut, String dateFin) {
         this.idHote = idHote;
         this.nom = nom;
         this.adresse = adresse;
@@ -57,7 +60,8 @@ public class Emplacement {
         this.latitude = latitude;
         this.longitude = longitude;
         this.prixParNuit = prixParNuit;
-        this.dispo = dispo;
+        this.dateDebut = dateDebut;
+        this.dateFin = dateFin;
     }
 
     // Getters et Setters
@@ -139,31 +143,6 @@ public class Emplacement {
 
     public void setPrixParNuit(Double prixParNuit) {
         this.prixParNuit = prixParNuit;
-    }
-
-    public Dispo getDispo() {
-        return dispo;
-    }
-
-    public void setDispo(Dispo dispo) {
-        this.dispo = dispo;
-    }
-}
-
-@Embeddable
-class Dispo {
-
-    @Column(nullable = false)
-    private String dateDebut;
-
-    @Column(nullable = false)
-    private String dateFin;
-
-    public Dispo() {}
-
-    public Dispo(String dateDebut, String dateFin) {
-        this.dateDebut = dateDebut;
-        this.dateFin = dateFin;
     }
 
     public String getDateDebut() {

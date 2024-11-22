@@ -38,6 +38,10 @@ public class GatewayConfig {
                         .path("/api/v1/reservation/**") // Path of the request to match
                         .filters(f -> f.stripPrefix(3)) // Remove the first part of the path
                         .uri("lb://SERVICE-RESERVATIONS") // Destination URI of the service
+                ).route("emplacement-route", r -> r
+                        .path("/api/v1/emplacement/**") // Path of the request to match
+                        .filters(f -> f.stripPrefix(3)) // Remove the first part of the path
+                        .uri("lb://SERVICE-EMPLACEMENTS") // Destination URI of the service
                 ).build();
     }
 
