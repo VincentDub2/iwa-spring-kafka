@@ -4,3 +4,6 @@
 [submodule "biv_quack_ms_api_gateway"]
 	path = biv_quack_ms_api_gateway
 	url = git@github.com:VincentDub2/biv_quack_ms_api_gateway.git
+[submodule "biv_quack_ms_eureka_discovery"]
+	path = biv_quack_ms_eureka_discovery
+	url = git@github.com:VincentDub2/biv_quack_ms_eureka_discovery.git
