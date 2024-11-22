@@ -3,6 +3,7 @@ package service_messaging.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.*;
 import service_messaging.model.Conversation;
 import service_messaging.model.Message;
@@ -10,6 +11,7 @@ import service_messaging.service.MessagingService;
 
 import java.util.List;
 
+@CrossOrigin(origins = "*")
 @RestController
 @RequestMapping("/")
 public class MessageController {
@@ -21,6 +23,7 @@ public class MessageController {
     @PostMapping("/conversation")
     public ResponseEntity<Conversation> createConversation(@RequestParam Long personOneId, @RequestParam Long personTwoId) {
         Conversation conversation = messagingService.createConversation(personOneId, personTwoId);
+        System.out.println("----------conversation = " + conversation);
         return new ResponseEntity<>(conversation, HttpStatus.CREATED);
     }
 
@@ -36,7 +39,7 @@ public class MessageController {
     public ResponseEntity<List<Message>> getMessages(@PathVariable Long conversationId) {
         System.out.println("requete get conversationId = " + conversationId);
         List<Message> messages = messagingService.getMessagesByConversationId(conversationId);
-        System.out.println("nb message trouvé = " + messages.size());
+        System.out.println("----------nb message trouvé = " + messages.size());
         return new ResponseEntity<>(messages, HttpStatus.OK);
     }
 
@@ -44,6 +47,7 @@ public class MessageController {
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<Conversation>> getConversationsByUser(@PathVariable Long userId) {
         List<Conversation> conversations = messagingService.getConversationsByUser(userId);
+        System.out.println("----------conversation user " + userId + " = " + conversations);
         return new ResponseEntity<>(conversations, HttpStatus.OK);
     }
 }

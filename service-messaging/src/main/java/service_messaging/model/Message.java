@@ -36,6 +36,10 @@ public class Message {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Conversation getConversation() {
         return conversation;
     }
@@ -68,4 +72,12 @@ public class Message {
         this.date = date;
     }
     
+    public static Message createTestMessage(Long id, Long senderId, String contenu, LocalDateTime date) {
+        Message message = new Message();
+        message.setId(id);
+        message.setSenderId(senderId);
+        message.setContenu(contenu);
+        message.setDate(date);
+        return message;
+    }
 }

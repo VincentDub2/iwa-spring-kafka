@@ -37,7 +37,7 @@ public class JwtTokenFilter implements GlobalFilter {
 
     @Override
     public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain) {
-        String path = exchange.getRequest().getURI().getPath();
+        /**String path = exchange.getRequest().getURI().getPath();
 
         logger.info("Incoming request path: {}", path);
 
@@ -97,6 +97,12 @@ public class JwtTokenFilter implements GlobalFilter {
 
         // Continuer le filtre avec la requête modifiée
         return chain.filter(exchange.mutate().request(modifiedRequest).build());
+        **/
+
+        logger.info("Skipping JWT validation for debugging purposes");
+        return chain.filter(exchange);
     }
+    
+
 
 }
