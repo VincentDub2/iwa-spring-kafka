@@ -39,6 +39,24 @@ public class User {
         this.role = "USER"; // Par défaut, un utilisateur est un utilisateur standard
     }
 
+    public User(String username, String firstname, String lastname, String email, String password) {
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.role = "USER"; // Par défaut, un utilisateur est un utilisateur standard
+    }
+
+    public User(String username, String firstname, String lastname, String email, String password, String role) {
+        this.username = username;
+        this.firstname = firstname;
+        this.lastname = lastname;
+        this.email = email;
+        this.password = password;
+        this.role = role;
+    }
+
     public String getFirstName() {
         return firstname;
     }
