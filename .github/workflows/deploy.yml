@@ -16,15 +16,15 @@ jobs:
 
       - name: Decode and save SSH key
         run: |
-          echo "${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}" | base64 --decode > decoded_ssh_key
-          chmod 600 decoded_ssh_key
+          echo "${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}" | base64 --decode > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          key: ${{ secrets.GITHUB_WORKSPACE }}/decoded_ssh_key
+          key: ~/.ssh/id_rsa
           port: 22
           script: |
             # Répertoire du projet
