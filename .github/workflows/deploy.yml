@@ -13,10 +13,12 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-      - name : Decrypt SSH private key
-        run:
+
+      - name: Decrypt SSH private key
+        run: |
           mkdir -p ~/.ssh
-          echo ${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }} | base64 -d > ~/.ssh/id_rsa
+          echo "${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}" | base64 -d > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
