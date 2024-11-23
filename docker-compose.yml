@@ -24,9 +24,7 @@ services:
       - "9092:9092"
 
   service-users:
-    build:
-      context: ./service-users
-      dockerfile: Dockerfile
+    image: vincentdub/service-users:latest
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-users:5432/usersdb
       - SPRING_DATASOURCE_USERNAME=user
@@ -66,9 +64,7 @@ services:
       retries: 3
 
   service-reservations:
-    build:
-      context: ./service-reservations
-      dockerfile: Dockerfile
+    image: vincentdub/service-reservations:latest
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-reservations:5432/reservations_db
       - SPRING_DATASOURCE_USERNAME=postgres
@@ -100,7 +96,7 @@ services:
       - "5432:5432"
     volumes:
     - reservations_db_data:/var/lib/postgresql/data
-    - ./service-reservations/create_tables_reservations.sql:/docker-entrypoint-initdb.d/create_tables_reservations.sql
+    - ./biv_quack_ms_reservations/create_tables_reservations.sql:/docker-entrypoint-initdb.d/create_tables_reservations.sql
 
     networks:
       - db-network
@@ -111,9 +107,7 @@ services:
       retries: 3
 
   service-emplacements:
-    build:
-      context: ./service-emplacements
-      dockerfile: Dockerfile
+    image: vincentdub/service-emplacements:latest
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-emplacements:5432/emplacementsdb
       - SPRING_DATASOURCE_USERNAME=user
@@ -122,6 +116,37 @@ services:
     depends_on:
       - kafka
       - db-service-emplacements
+      - api-gateway
+    networks:
+      - kafka-network
+      - db-network
+      - api-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health  | grep UP || exit 1"
+      interval: 30s
+      timeout: 60s
+      retries: 5
+    restart: unless-stopped
+
+
+  db-service-emplacements:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: emplacementsdb
+    ports:
+      - "5433:5432"
+    volumes:
+      - emplacementsdb_data:/var/lib/postgresql/data
+      - ./service-emplacements/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - db-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d emplacementsdb" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
 
   service-messaging:
@@ -160,30 +185,8 @@ services:
   # Autres services : ajoutez autant de services que nécessaire
 
 
-  db-service-emplacements:
-    image: postgres:latest
-    environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: emplacementsdb
-    ports:
-      - "5433"
-    volumes:
-      - emplacementsdb_data:/var/lib/postgresql/data
-    networks:
-      - db-network
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U user -d emplacementsdb" ]
-      interval: 30s
-      timeout: 5s
-      retries: 3
-
   discovery-service:
-    #Image: discovery-service:latest   Discovery server Eureka
-    build:
-      context: ./discovery-service-eureka
-      dockerfile: Dockerfile
-    container_name: discovery-service
+    image: vincentdub/service-eureka-discovery:latest
     ports:
       - "8761:8761"  # Output to port 8761
     networks:
@@ -196,10 +199,7 @@ services:
     restart: unless-stopped
 
   api-gateway:
-    build:
-        context: ./api-gateway
-        dockerfile: Dockerfile
-    container_name: api-gateway
+    image: vincentdub/service-api-gateway:latest
     depends_on:
         - discovery-service
     environment:

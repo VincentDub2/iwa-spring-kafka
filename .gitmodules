@@ -1,0 +1,15 @@
+[submodule "biv_quack_ms_users"]
+	path = biv_quack_ms_users
+	url = git@github.com:VincentDub2/biv_quack_ms_users.git
+[submodule "biv_quack_ms_api_gateway"]
+	path = biv_quack_ms_api_gateway
+	url = git@github.com:VincentDub2/biv_quack_ms_api_gateway.git
+[submodule "biv_quack_ms_eureka_discovery"]
+	path = biv_quack_ms_eureka_discovery
+	url = git@github.com:VincentDub2/biv_quack_ms_eureka_discovery.git
+[submodule "biv_quack_ms_reservations"]
+	path = biv_quack_ms_reservations
+	url = git@github.com:VincentDub2/biv_quack_ms_reservations.git
+[submodule "biv_quack_ms_emplacements"]
+	path = biv_quack_ms_emplacements
+	url = git@github.com:VincentDub2/biv_quack_ms_emplacements.git

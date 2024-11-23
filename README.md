@@ -2,6 +2,7 @@ For run the container, you need to have docker installed in your machine. If you
 
 After that, you can run the following command to build the image and run the container:
 
+for run the script:
 ```bash
-docker-compose up 
+start-docker.sh
 ```
