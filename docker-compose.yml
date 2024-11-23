@@ -107,9 +107,7 @@ services:
       retries: 3
 
   service-emplacements:
-    build:
-      context: ./service-emplacements
-      dockerfile: Dockerfile
+    image: vincentdub/service-emplacements:latest
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-emplacements:5432/emplacementsdb
       - SPRING_DATASOURCE_USERNAME=user
