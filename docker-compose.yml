@@ -222,7 +222,46 @@ services:
       interval: 30s
       timeout: 5s
       retries: 3
+  # Microservice de notifications
+  service-notification:
+    image: vincentdub/service-notification:latest
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-notifications:5432/notificationdb
+      - SPRING_DATASOURCE_USERNAME=user
+      - SPRING_DATASOURCE_PASSWORD=password
+      - SPRING_KAFKA_BOOTSTRAP_SERVERS=kafka:9092
+    depends_on:
+      - kafka
+      - db-service-notifications
+      - api-gateway
+    networks:
+      - kafka-network
+      - db-network
+      - api-network
+    healthcheck:
+      test: "curl --fail --silent localhost:8080/actuator/health | grep UP || exit 1"
+      interval: 30s
+      timeout: 60s
+      retries: 5
+    restart: unless-stopped
 
+  db-service-notifications:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: notificationdb
+    ports:
+      - "5432"
+    volumes:
+      - notificationsdb_data:/var/lib/postgresql/data
+    networks:
+      - db-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U user -d notificationdb" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   discovery-service:
     image: vincentdub/service-eureka-discovery:latest
@@ -261,6 +300,7 @@ volumes:
   messagingdb_data:
   reservations_db_data:
   evaluationsdb_data:
+  notificationsdb_data:
 
 
 networks:
