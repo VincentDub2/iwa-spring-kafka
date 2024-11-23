@@ -24,9 +24,7 @@ services:
       - "9092:9092"
 
   service-users:
-    build:
-      context: ./service-users
-      dockerfile: Dockerfile
+    image: vincentdub/service-users:latest
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-users:5432/usersdb
       - SPRING_DATASOURCE_USERNAME=user
@@ -179,11 +177,7 @@ services:
       retries: 3
 
   discovery-service:
-    #Image: discovery-service:latest   Discovery server Eureka
-    build:
-      context: ./discovery-service-eureka
-      dockerfile: Dockerfile
-    container_name: discovery-service
+    image: vincentdub/service-eureka-discovery:latest
     ports:
       - "8761:8761"  # Output to port 8761
     networks:
@@ -196,10 +190,7 @@ services:
     restart: unless-stopped
 
   api-gateway:
-    build:
-        context: ./api-gateway
-        dockerfile: Dockerfile
-    container_name: api-gateway
+    image: vincentdub/service-api-gateway:latest
     depends_on:
         - discovery-service
     environment:
