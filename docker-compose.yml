@@ -64,9 +64,7 @@ services:
       retries: 3
 
   service-reservations:
-    build:
-      context: ./service-reservations
-      dockerfile: Dockerfile
+    image: vincentdub/service-reservations:latest
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://db-service-reservations:5432/reservations_db
       - SPRING_DATASOURCE_USERNAME=postgres
