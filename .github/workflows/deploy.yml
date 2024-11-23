@@ -14,42 +14,27 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Configure SSH
-        run: |
-            # Créer le répertoire SSH
-            mkdir -p ~/.ssh
-            
-            # Désactiver la vérification stricte des hôtes SSH
-            echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > ~/.ssh/config
-            
-            # Ajouter la clé privée SSH à l'agent SSH
-            eval $(ssh-agent)
-            echo "${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}" | base64 -d | ssh-add -
-            
-            # Modifier les permissions
-            chmod 600 ~/.ssh/config
-
-      - name: Clone or update project and deploy services
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ~/.ssh/gcp_key ${{ secrets.GCP_VM_USER }}@${{ secrets.GCP_VM_IP }} << 'EOF'
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v0.1.12
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}
+          key_type: base64
+          port: 22
+          script: |
             # Répertoire du projet
             PROJECT_DIR="~/backend-project"
-          
             # Vérification si le répertoire existe
             if [ ! -d "$PROJECT_DIR" ]; then
-              echo "Clonage du projet..."
-              git clone https://github.com/VincentDub2/iwa-spring-kafka.git $PROJECT_DIR
+              echo "Clonage du projet sur la branche stage..."
+              git clone -b stage https://github.com/VincentDub2/iwa-spring-kafka.git $PROJECT_DIR
             else
               echo "Mise à jour du projet..."
               cd $PROJECT_DIR
-              # Basculer sur la branche stage
-              git fetch origin
-              git checkout stage
               git pull origin stage
             fi
-          
             # Exécution du script pour démarrer les services
             echo "Lancement des services Docker..."
             cd $PROJECT_DIR
-            ./update-and-start-docker.sh
-          EOF
+            ./start-docker.sh
