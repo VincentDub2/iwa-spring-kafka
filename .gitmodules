@@ -7,3 +7,6 @@
 [submodule "biv_quack_ms_eureka_discovery"]
 	path = biv_quack_ms_eureka_discovery
 	url = git@github.com:VincentDub2/biv_quack_ms_eureka_discovery.git
+[submodule "biv_quack_ms_reservations"]
+	path = biv_quack_ms_reservations
+	url = git@github.com:VincentDub2/biv_quack_ms_reservations.git
