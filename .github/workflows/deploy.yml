@@ -14,10 +14,20 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Decode SSH key
+      - name: Configure SSH
         run: |
-          echo "${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}" | base64 --decode > ~/.ssh/gcp_key
-          chmod 600 ~/.ssh/gcp_key
+            # Créer le répertoire SSH
+            mkdir -p ~/.ssh
+            
+            # Désactiver la vérification stricte des hôtes SSH
+            echo -e "Host *\n\tStrictHostKeyChecking no\n\tUserKnownHostsFile=/dev/null" > ~/.ssh/config
+            
+            # Ajouter la clé privée SSH à l'agent SSH
+            eval $(ssh-agent)
+            echo "${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}" | base64 -d | ssh-add -
+            
+            # Modifier les permissions
+            chmod 600 ~/.ssh/config
 
       - name: Clone or update project and deploy services
         run: |
