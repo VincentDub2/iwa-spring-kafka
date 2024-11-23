@@ -10,9 +10,9 @@ import polytech.service_emplacements.service.EmplacementService;
 import java.util.List;
 import java.util.Optional;
 
-@CrossOrigin(origins = "*")
+//@CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/emplacement")
+@RequestMapping("/")
 public class EmplacementController {
 
     private final EmplacementService emplacementService;
