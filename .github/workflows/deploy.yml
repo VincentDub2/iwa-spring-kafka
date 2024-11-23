@@ -15,7 +15,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Deploy to VM
-        uses: appleboy/ssh-action@v0.1.12
+        uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
