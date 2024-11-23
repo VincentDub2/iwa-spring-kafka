@@ -13,18 +13,17 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
-
-      - name: Decode and save SSH key
-        run: |
-          echo "${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}" | base64 --decode > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
+      - name : Decrypt SSH private key
+        run:
+          mkdir -p ~/.ssh
+          echo ${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }} | base64 -d > ~/.ssh/id_rsa
 
       - name: Deploy to VM
         uses: appleboy/ssh-action@v1.2.0
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          key: ${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}
+          key: ~/.ssh/id_rsa
           debug: true
           port: 22
           script: |
