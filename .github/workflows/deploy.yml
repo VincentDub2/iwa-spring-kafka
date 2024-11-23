@@ -25,7 +25,7 @@ jobs:
         with:
           host: ${{ secrets.GCP_VM_IP }}
           username: ${{ secrets.GCP_VM_USER }}
-          key: ~/.ssh/id_rsa
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}
           debug: true
           port: 22
           script: |
