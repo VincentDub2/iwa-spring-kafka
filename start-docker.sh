@@ -12,6 +12,10 @@ fi
 echo "Arrêt et suppression des conteneurs existants..."
 docker-compose -f $COMPOSE_FILE down
 
+# Suppression de toutes les images Docker
+echo "Suppression de toutes les images Docker..."
+docker image prune -a -f
+
 echo "Récupération des dernières versions des images..."
 docker-compose -f $COMPOSE_FILE pull
 
