@@ -13,3 +13,9 @@
 [submodule "biv_quack_ms_emplacements"]
 	path = biv_quack_ms_emplacements
 	url = git@github.com:VincentDub2/biv_quack_ms_emplacements.git
+[submodule "biv_quack_ms_evaluation"]
+	path = biv_quack_ms_evaluation
+	url = git@github.com:VincentDub2/biv_quack_ms_evaluation.git
+[submodule "biv_quack_ms_notification"]
+	path = biv_quack_ms_notification
+	url = git@github.com:VincentDub2/biv_quack_ms_notification.git
