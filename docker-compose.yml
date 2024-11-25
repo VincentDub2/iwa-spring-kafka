@@ -52,7 +52,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: usersdb
     ports:
-      - "5432"
+      - "5433:5432"
     volumes:
       - usersdb_data:/var/lib/postgresql/data
     networks:
@@ -93,7 +93,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: reservations_db
     ports:
-      - "5432:5432"
+      - "5434:5432"
     volumes:
     - reservations_db_data:/var/lib/postgresql/data
     - ./biv_quack_ms_reservations/create_tables_reservations.sql:/docker-entrypoint-initdb.d/create_tables_reservations.sql
@@ -136,7 +136,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: emplacementsdb
     ports:
-      - "5433:5432"
+      - "5435:5432"
     volumes:
       - emplacementsdb_data:/var/lib/postgresql/data
       - ./service-emplacements/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -177,7 +177,7 @@ services:
     networks:
       - db-network
     ports:
-      - "5434:5432"
+      - "5436:5432"
     volumes:
       - messagingdb_data:/var/lib/postgresql/data
       - ./service-messaging/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -212,7 +212,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: evaluationdb
     ports:
-      - "5432"
+      - "5437:5432"
     volumes:
       - evaluationsdb_data:/var/lib/postgresql/data
     networks:
@@ -252,7 +252,7 @@ services:
       POSTGRES_PASSWORD: password
       POSTGRES_DB: notificationdb
     ports:
-      - "5432"
+      - "5438:5432"
     volumes:
       - notificationsdb_data:/var/lib/postgresql/data
     networks:
