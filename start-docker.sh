@@ -39,4 +39,4 @@ sleep 10
 # Vérification des services
 check_services
 
-echo "Tous les services ont été lancés avec les dernières images. Utilisez 'docker-compose logs -f' pour voir les logs."
+echo "Tous les services ont été lancés avec les dernières images. Utilisez 'docker-compose logs -f' pour voir les logs.".
