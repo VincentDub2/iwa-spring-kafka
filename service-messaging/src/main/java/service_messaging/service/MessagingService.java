@@ -26,6 +26,20 @@ public class MessagingService {
         return conversationRepository.save(conversation);
     }
 
+    /**
+     * Get conversation by id
+     * @param conversationId id of the conversation
+     * @return conversation
+     */
+    public Conversation getConversationById(Long conversationId) {
+        Optional<Conversation> conversationOpt = conversationRepository.findById(conversationId);
+        if (conversationOpt.isPresent()) {
+            return conversationOpt.get();
+        } else {
+            throw new RuntimeException("Conversation not found");
+        }
+    }
+
     // Envoyer un message dans une conversation existante
     public Message sendMessage(Long conversationId, Long senderId, String contenu) {
         Optional<Conversation> conversationOpt = conversationRepository.findById(conversationId);
