@@ -5,6 +5,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.*;
+import service_messaging.dto.MessageEvent;
+import service_messaging.kafka.KafkaProducer;
 import service_messaging.model.Conversation;
 import service_messaging.model.Message;
 import service_messaging.service.MessagingService;
@@ -19,6 +21,9 @@ public class MessageController {
     @Autowired
     private MessagingService messagingService;
 
+    @Autowired
+    private KafkaProducer kafkaProducer;
+
     // Créer une nouvelle conversation entre deux utilisateurs
     @PostMapping("/conversation")
     public ResponseEntity<Conversation> createConversation(@RequestParam Long personOneId, @RequestParam Long personTwoId) {
@@ -30,7 +35,16 @@ public class MessageController {
     // Envoyer un message dans une conversation existante
     @PostMapping("/send")
     public ResponseEntity<Message> sendMessage(@RequestParam Long conversationId, @RequestParam Long senderId, @RequestParam String contenu) {
+        Conversation conversation = messagingService.getConversationById(conversationId);
+        Long receiverId = conversation.getPersonOneId().equals(senderId) ? conversation.getPersonTwoId() : conversation.getPersonOneId();
         Message message = messagingService.sendMessage(conversationId, senderId, contenu);
+        MessageEvent messageEvent = new MessageEvent();
+        messageEvent.setSenderId(senderId);
+        messageEvent.setReceiverId(receiverId);
+        messageEvent.setContenu(contenu);
+        messageEvent.setConversationId(conversationId);
+        kafkaProducer.sendMessageEvent(messageEvent);
+
         return new ResponseEntity<>(message, HttpStatus.CREATED);
     }
 
