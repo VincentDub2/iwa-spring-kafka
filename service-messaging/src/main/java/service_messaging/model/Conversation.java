@@ -29,6 +29,10 @@ public class Conversation {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Long getPersonOneId() {
         return personOneId;
     }
@@ -51,5 +55,14 @@ public class Conversation {
 
     public void setMessages(List<Message> messages) {
         this.messages = messages;
+    }
+
+    public static Conversation createTestConversation(Long id, Long person1, Long person2, List<Message> messages) {
+        Conversation conv = new Conversation();
+        conv.setId(id);
+        conv.setPersonOneId(person1);
+        conv.setPersonTwoId(person2);
+        conv.setMessages(messages);
+        return conv;
     }
 }

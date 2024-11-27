@@ -1,0 +1,40 @@
+name: Deploy to Google Cloud VM
+
+on:
+  push:
+    tags:
+      - 'stage-*'  # Correspond aux tags commençant par "stage-"
+      - 'prod-*'   # Correspond aux tags commençant par "prod-"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to VM
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.GCP_VM_IP }}
+          username: ${{ secrets.GCP_VM_USER }}
+          key: ${{ secrets.GCP_SSH_PRIVATE_KEY_B64 }}
+          debug: true
+          port: 22
+          script: |
+            # Répertoire du projet
+            PROJECT_DIR="~/backend-project"
+            # Vérification si le répertoire existe
+            if [ ! -d "$PROJECT_DIR" ]; then
+              echo "Clonage du projet sur la branche stage..."
+              git clone -b stage https://github.com/VincentDub2/iwa-spring-kafka.git $PROJECT_DIR
+            else
+              echo "Mise à jour du projet..."
+              cd $PROJECT_DIR
+              git pull origin stage
+            fi
+            # Exécution du script pour démarrer les services
+            echo "Lancement des services Docker..."
+            cd $PROJECT_DIR
+            ./start-docker.sh
