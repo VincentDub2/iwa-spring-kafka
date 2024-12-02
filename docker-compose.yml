@@ -263,6 +263,46 @@ services:
       timeout: 5s
       retries: 3
 
+  service-images:
+    build:
+      context: ./biv_quack_ms_image
+      dockerfile: Dockerfile
+    environment:
+      - DB_HOST=db-service-images
+      - DB_PORT=3306
+      - DB_DATABASE=imagesdb
+      - DB_USERNAME=user
+      - DB_PASSWORD=password
+    depends_on:
+      - kafka
+      - db-service-images
+    networks:
+      - kafka-network
+      - db-network
+    ports:
+      - "8081:80"
+    volumes:
+      - ./biv_quack_ms_image:/var/www
+    healthcheck:
+      test: [ "CMD-SHELL", "curl --fail http://localhost || exit 1" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  db-service-images:
+    image: mariadb:latest
+    environment:
+      MYSQL_DATABASE: imagesdb
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+    ports:
+      - "3307:3306"
+    volumes:
+      - imagesdb_data:/var/lib/mysql
+    networks:
+      - db-network
+
+
   discovery-service:
     image: vincentdub/service-eureka-discovery:latest
     ports:
@@ -301,6 +341,7 @@ volumes:
   reservations_db_data:
   evaluationsdb_data:
   notificationsdb_data:
+  imagesdb_data:
 
 
 networks:
