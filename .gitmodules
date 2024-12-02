@@ -19,3 +19,6 @@
 [submodule "biv_quack_ms_notification"]
 	path = biv_quack_ms_notification
 	url = git@github.com:VincentDub2/biv_quack_ms_notification.git
+[submodule "biv_quack_ms_image"]
+	path = biv_quack_ms_image
+	url = https://github.com/VincentDub2/biv_quack_ms_image

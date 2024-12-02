@@ -76,6 +76,7 @@ This setup defines a microservice architecture using `docker-compose.yml`. The s
    - `service-notifications`: Sends notifications to users.
    - `api-gateway`: Acts as a single entry point for all services.
    - `discovery-service`: Registers and tracks microservices using Eureka.
+   - `servies-images (PHP larvel)` : Allow upload images
 
 4. **Docker Networks**:
    - **api-network**: For API Gateway and microservices.
