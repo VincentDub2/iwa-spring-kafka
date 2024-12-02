@@ -16,7 +16,7 @@ MICROSERVICES=(
   "biv_quack_ms_emplacements"
   "biv_quack_ms_evaluation"
   "biv_quack_ms_notification"
-  "biv_quack_ms_images"
+  "biv_quack_ms_image"
 )
 
 # Parcours des microservices
